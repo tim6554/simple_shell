@@ -5,10 +5,10 @@
  *
  * Return: 1 if success, 0 otherwise
  */
-int main(int arc, char **arv, char **envp)
+int main(int car, char **var, char **envp)
 {
-	bool interactive = (arc == 1 && isatty(STDIN_FILENO));
+	bool interactive = (car == 1 && isatty(STDIN_FILENO));
 
-	prompt(arv, envp, interactive);
+	prompt(var, envp, interactive);
 	return (0);
 }
