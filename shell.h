@@ -26,7 +26,7 @@ char **tokenize_env(char *path);
 extern char **environ;
 void geterror(denim *n, char **var, char *dmc);
 char *_strcat(char *dest, char *src);
-char *handle_path(char **rgv, char *cmd);
+char *handle_path(char **rgv, char *dmc);
 char *_strcpy(char *fin, char *men);
 int _strlen(char *s);
 void handle_exit(char *dmc);
