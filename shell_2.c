@@ -18,7 +18,7 @@ void prompt(char **var, char **envp, bool flg)
 {
 	size_t n = 0;
 	ssize_t num_c = 0;
-	char *cmd = NULL, *rgv[MAX_C];
+	char *dmc = NULL, *rgv[MAX_C];
 	int x;
 
 	while (1)
@@ -26,21 +26,21 @@ void prompt(char **var, char **envp, bool flg)
 		if (flg && isatty(STDIN_FILENO))
 			write(STDOUT_FILENO, "$ ", _strlen("$ "));
 		signal(SIGINT, sig_handler);
-		num_c = getline(&cmd, &n, stdin);
-		if (num_c == -1) /*handles the end file case*/
+		num_c = getline(&dmc, &n, stdin);
+		if (num_c == -1) 
 		{
-			free(cmd);
+			free(dmc);
 			exit(EXIT_SUCCESS);
 		}
-		if (cmd[num_c - 1] == '\n')
-			cmd[num_c - 1] = '\0';
-		cmd = trim(cmd);
-		if (_strlen(cmd) == 0)
+		if (dmc[num_c - 1] == '\n')
+			dmc[num_c - 1] = '\0';
+		dmc = trim(dmc);
+		if (_strlen(dmc) == 0)
 			continue;
 		x = 0;
-		rgv[x] = strtok(cmd, " \n");
-		handle_exit(cmd);
-		handle_path(rgv, cmd);
+		rgv[x] = strtok(dmc, " \n");
+		handle_exit(dmc);
+		handle_path(rgv, dmc);
 		while (rgv[x])
 		{
 			x++;
@@ -48,5 +48,5 @@ void prompt(char **var, char **envp, bool flg)
 		}
 		runcmd(rgv, var, envp); 
 	}
-	free(cmd);
+	free(dmc);
 }
