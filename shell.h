@@ -27,7 +27,7 @@ extern char **environ;
 void geterror(denim *n, char **arv, char *cmd);
 char *_strcat(char *dest, char *src);
 char *handle_path(char **rgv, char *cmd);
-char *_strcpy(char *dest, char *src);
+char *_strcpy(char *fin, char *men);
 int _strlen(char *s);
 void handle_exit(char *cmd);
 void runcmd(char **rgv, char **arv, char **envp);
