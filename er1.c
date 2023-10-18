@@ -1,141 +1,88 @@
 #include "shell.h"
-
 /**
- * print_error - prints an error message
- * @info: the parameter & return info struct
- * @estr: string containing specified error type
- * Return: 0 if no numbers in string, converted number otherwise
- *        -1 on error
+ * _myhelp - directory of the process
+ * @info: Structure constant function prototype.
+ *  Return: Always 0
  */
-int _erratoi(char *a)
+int intlen(int i)
 {
-	int n = 0;
-	unsigned long int result = 0;
+	unsigned int num;
+	int nel = 1;
 
-	if (*a == '+')
-		a++;
-	for (n = 0;  a[n] != '\0'; n++)
+	if (i < 0)
 	{
-		if (a[n] >= '0' && a[n] <= '9')
-		{
-			result *= 10;
-			result += (a[n] - '0');
-			if (result > INT_MAX)
-				return (-1);
-		}
-		else
-			return (-1);
-	}
-	return (result);
-}
-
-/**
- * print_error - prints an error message
- * @info: the parameter & return info struct
- * @estr: string containing specified error type
- * Return: 0 if no numbers in string, converted number otherwise
- *        -1 on error
- */
-void print_error(info_t *info, char *erst)
-{
-	_eputs(info->fname);
-	_eputs(": ");
-	print_d(info->line_count, STDERR_FILENO);
-	_eputs(": ");
-	_eputs(info->argv[0]);
-	_eputs(": ");
-	_eputs(erst);
-}
-
-/**
- * print_error - prints an error message
- * @info: the parameter & return info struct
- * @estr: string containing specified error type
- * Return: 0 if no numbers in string, converted number otherwise
- *        -1 on error
- */
-int print_d(int u, int d)
-{
-	int (*__putchar)(char) = _putchar;
-	int n, count = 0;
-	unsigned int _abs_, current;
-
-	if (d == STDERR_FILENO)
-		__putchar = _eputchar;
-	if (u < 0)
-	{
-		_abs_ = -u;
-		__putchar('-');
-		count++;
+		nel++;
+		num = i * -1;
 	}
 	else
-		_abs_ = u;
-	current = _abs_;
-	for (n = 1000000000; n > 1; n /= 10)
 	{
-		if (_abs_ / n)
-		{
-			__putchar('0' + current / n);
-			count++;
-		}
-		current %= n;
+		num = i;
 	}
-	__putchar('0' + current);
-	count++;
-
-	return (count);
-}
-
-/**
- * print_error - prints an error message
- * @info: the parameter & return info struct
- * @estr: string containing specified error type
- * Return: 0 if no numbers in string, converted number otherwise
- *        -1 on error
- */
-char *convert_number(long int num, int base, int flags)
-{
-	static char *array;
-	static char buffer[50];
-	char sign = 0;
-	char *ptr;
-	unsigned long n = num;
-
-	if (!(flags & CONVERT_UNSIGNED) && num < 0)
+	while (num > 9)
 	{
-		n = -num;
-		sign = '-';
-
+		nel++;
+		num = num / 10;
 	}
-	array = flags & CONVERT_LOWERCASE ? "0123456789abcdef" : "0123456789ABCDEF";
-	ptr = &buffer[49];
-	*ptr = '\0';
 
-	do	{
-		*--ptr = array[n % base];
-		n /= base;
-	} while (n != 0);
-
-	if (sign)
-		*--ptr = sign;
-	return (ptr);
+	return (nel);
 }
-
 /**
- * print_error - prints an error message
- * @info: the parameter & return info struct
- * @estr: string containing specified error type
- * Return: 0 if no numbers in string, converted number otherwise
- *        -1 on error
+ * _myhelp - directory of the process
+ * @info: Structure constant function prototype.
+ *  Return: Always 0
  */
-void remove_comments(char *f)
+char *_itoa(int num)
 {
-	int n;
+	char *f;
+	size_t  a;
+	int nel = intlen(num);
 
-	for (n = 0; f[n] != '\0'; n++)
-		if (f[n] == '#' && (!n || f[n - 1] == ' '))
-		{
-			f[n] = '\0';
-			break;
-		}
+	buff = malloc(nel + 1);
+	if (!f)
+	{
+		return (NULL);
+	}
+	f[nel] = '\0';
+	if (num < 0)
+	{
+		a = num * -1;
+		*f = '-';
+	}
+	else
+		a = num;
+	nel--;
+
+	do {
+		*(f + nel) = (a % 10) + '0';
+		a /= 10;
+		nel--;
+	} while (a > 0);
+		return (f);
+}
+/**
+ * _myhelp - directory of the process
+ * @info: Structure constant function prototype.
+ *  Return: Always 0
+ */
+void geterror(denim *n, char **var, char *dmc)
+{
+	int len;
+	char *emsg, *v_string;
+
+	v_string = _itoa(n->cnt);
+	len = _strlen(var[0]) + _strlen(dmc) + _strlen(v_string) + 17;
+	emsg = malloc(len);
+	if (!errmsg)
+	{
+		return;
+	}
+	_strcpy(emsg, var[0]);
+	_strcat(emsg, ": ");
+	_strcat(emsg, v_string);
+	_strcat(emsg, ": ");
+	_strcat(emsg, dmc);
+	_strcat(emsg, ": not found\n");
+	_strcat(emsg, "\0");
+	write(STDOUT_FILENO, emsg, len);
+	free(emsg);
 }
