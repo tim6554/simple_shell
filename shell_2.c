@@ -1,95 +1,52 @@
 #include "shell.h"
-
-
-/**
- * _myhelp - directory of the process
- * @info: Structure constant function prototype.
- *  Return: Always 0
- */
-int _myhelp(info_t *info)
-{
-	char **argy;
-
-	argy = info->argv;
-	_puts("call for help works but not yet shown \n");
-	if (0)
-		_puts(*argy); 
-	return (0);
-}
-
-
-/**
- * _myexit - exits
- * @info: Structure containing function prototype.
- *  Return: exit status
- *         [0] != "exit"
- */
-int _myexit(info_t *info)
-{
-	int ec;
-
-	if (info->argv[1]) 
-		ec = _erratoi(info->argv[1]);
-		if (ec == -1)
-		{
-			info->status = 2;
-			print_error(info, "Illegal number: ");
-			_eputs(info->argv[1]);
-			_eputchar('\n');
-			return (1);
-		}
-		info->err_num = _erratoi(info->argv[1]);
-		return (-2);
-	}
-	info->err_num = -1;
-	return (-2);
-}
-
 /**
  * _mycd - changes directory 
  * @info: Structure containing function prototype.
  *  Return: Always 0
  */
-int _mycd(info_t *info)
+void sig_handler(int i)
 {
-	char *a, *wd, buffer[1024];
-	int chwd_ret;
+	(void)i;
+	write(STDOUT_FILENO, "\n$ ", _strlen("\n$ "));
+}
+/**
+ * _mycd - changes directory 
+ * @info: Structure containing function prototype.
+ *  Return: Always 0
+ */
+void prompt(char **var, char **envp, bool flg)
+{
+	size_t n = 0;
+	ssize_t num_c = 0;
+	char *cmd = NULL, *rgv[MAX_C];
+	int x;
 
-	a = getcwd(buffer, 1024);
-	if (!s)
-		_puts("TODO: >>getcwd failure emsg here<<\n");
-	if (!info->argv[1])
+	while (1)
 	{
-		wd = _getenv(info, "HOME=");
-		if (!wd)
-			chwd_ret = 
-				chwd((wd = _getenv(info, "PWD=")) ? wd : "/");
-		else
-			chwd_ret = chwd(wd);
-	}
-	else if (_strcmp(info->argv[1], "-") == 0)
-	{
-		if (!_getenv(info, "OLDPWD="))
+		if (flg && isatty(STDIN_FILENO))
+			write(STDOUT_FILENO, "$ ", _strlen("$ "));
+		signal(SIGINT, sig_handler);
+		num_c = getline(&cmd, &n, stdin);
+		if (num_c == -1) /*handles the end file case*/
 		{
-			_puts(a);
-			_putchar('\n');
-			return (1);
+			free(cmd);
+			exit(EXIT_SUCCESS);
 		}
-		_puts(_getenv(info, "OLDPWD=")), _putchar('\n');
-		chwd_ret = 
-			chwd((wd = _getenv(info, "OLDPWD=")) ? wd : "/");
+		if (cmd[num_c - 1] == '\n')
+			cmd[num_c - 1] = '\0';
+		cmd = trim(cmd);
+		if (_strlen(cmd) == 0)
+			continue;
+		x = 0;
+		rgv[x] = strtok(cmd, " \n");
+		handle_exit(cmd);
+		handle_path(rgv, cmd);
+		while (rgv[x])
+		{
+			x++;
+			rgv[x] = strtok(NULL, " \n");
+		}
+		runcmd(rgv, var, envp); 
 	}
-	else
-		chwd_ret = chwd(info->argv[1]);
-	if (chwd_ret == -1)
-	{
-		print_error(info, "can not change dir to ");
-		_eputs(info->argv[1]), _eputchar('\n');
-	}
-	else
-	{
-		_setenv(info, "OLDPWD", _getenv(info, "PWD="));
-		_setenv(info, "PWD", getcwd(buffer, 1024));
-	}
-	return (0);
+	free(cmd);
 }
