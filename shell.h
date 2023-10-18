@@ -31,7 +31,7 @@ char *_strcpy(char *fin, char *men);
 int _strlen(char *s);
 void handle_exit(char *dmc);
 void runcmd(char **rgv, char **arv, char **envp);
-char *trim(char *cmd);
+char *trim(char *dmc);
 
 
 #endif
