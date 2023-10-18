@@ -17,7 +17,7 @@ typedef struct denim
 {
 	int count;
 } denim;
-void prompt(char **arv, char **envp, bool flg);
+void prompt(char **var, char **envp, bool flg);
 int _strcmp(char *s1, char *s2);
 char *_strncpy(char *dest, char *src, int n);
 char *get_path(char *cmd);
