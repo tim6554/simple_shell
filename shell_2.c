@@ -1,52 +1,74 @@
 #include "shell.h"
-/**
- * _mycd - changes directory 
- * @info: Structure containing function prototype.
- *  Return: Always 0
- */
-void sig_handler(int i)
-{
-	(void)i;
-	write(STDOUT_FILENO, "\n$ ", _strlen("\n$ "));
-}
-/**
- * _mycd - changes directory 
- * @info: Structure containing function prototype.
- *  Return: Always 0
- */
-void prompt(char **var, char **envp, bool flg)
-{
-	size_t n = 0;
-	ssize_t num_c = 0;
-	char *dmc = NULL, *rgv[MAX_C];
-	int x;
 
-	while (1)
+/**
+ * clear_info - initializes info_t struct
+ * @info: struct address
+ */
+void clear_info(info_t *info)
+{
+	info->arg = NULL;
+	info->argv = NULL;
+	info->path = NULL;
+	info->argc = 0;
+}
+
+/**
+ * set_info - initializes info_t struct
+ * @info: struct address
+ * @av: argument vector
+ */
+void set_info(info_t *info, char **av)
+{
+	int i = 0;
+
+	info->fname = av[0];
+	if (info->arg)
 	{
-		if (flg && isatty(STDIN_FILENO))
-			write(STDOUT_FILENO, "$ ", _strlen("$ "));
-		signal(SIGINT, sig_handler);
-		num_c = getline(&dmc, &n, stdin);
-		if (num_c == -1) 
+		info->argv = strtow(info->arg, " \t");
+		if (!info->argv)
 		{
-			free(dmc);
-			exit(EXIT_SUCCESS);
+
+			info->argv = malloc(sizeof(char *) * 2);
+			if (info->argv)
+			{
+				info->argv[0] = _strdup(info->arg);
+				info->argv[1] = NULL;
+			}
 		}
-		if (dmc[num_c - 1] == '\n')
-			dmc[num_c - 1] = '\0';
-		dmc = trim(dmc);
-		if (_strlen(dmc) == 0)
-			continue;
-		x = 0;
-		rgv[x] = strtok(dmc, " \n");
-		handle_exit(dmc);
-		handle_path(rgv, dmc);
-		while (rgv[x])
-		{
-			x++;
-			rgv[x] = strtok(NULL, " \n");
-		}
-		runcmd(rgv, var, envp); 
+		for (i = 0; info->argv && info->argv[i]; i++)
+			;
+		info->argc = i;
+
+		replace_alias(info);
+		replace_vars(info);
 	}
-	free(dmc);
+}
+
+/**
+ * free_info - frees info_t struct fields
+ * @info: struct address
+ * @all: true if freeing all fields
+ */
+void free_info(info_t *info, int all)
+{
+	ffree(info->argv);
+	info->argv = NULL;
+	info->path = NULL;
+	if (all)
+	{
+		if (!info->cmd_buf)
+			free(info->arg);
+		if (info->env)
+			free_list(&(info->env));
+		if (info->history)
+			free_list(&(info->history));
+		if (info->alias)
+			free_list(&(info->alias));
+		ffree(info->environ);
+			info->environ = NULL;
+		bfree((void **)info->cmd_buf);
+		if (info->readfd > 2)
+			close(info->readfd);
+		_putchar(BUF_FLUSH);
+	}
 }
