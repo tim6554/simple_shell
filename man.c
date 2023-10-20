@@ -1,4 +1,15 @@
-nd executes the commands a user enters. In some systems, the shell is called a command interpreter. A shell usually implies an interface
+
+
+.SH NAME
+.B simple_shell
+- Simple shell create in C to interact with a linux operating system.
+
+.SH SYNOPSIS
+ hsh [options] [file]
+
+.SH DESCRIPTION
+Shell is a UNIX term for the interactive user interface with an operating system. The shell is the layer of programming that understands
+and executes the commands a user enters. In some systems, the shell is called a command interpreter. A shell usually implies an interface
 with a command syntax 
 
 .B Overview
@@ -26,3 +37,7 @@ $ ls -l
 
 .SH BUGS
 Single space required after argument.
+
+
+.SH AUTHOR
+tim and nana
