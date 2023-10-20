@@ -1,88 +1,92 @@
 #include "shell.h"
+
 /**
- * _myhelp - directory of the process
- * @info: Structure constant function prototype.
- *  Return: Always 0
+ * _myenv - prints the current environment
+ * @info: Structure containing potential arguments. Used to maintain
+ *          constant function prototype.
+ * Return: Always 0
  */
-int intlen(int i)
+int _myenv(info_t *info)
 {
-	unsigned int num;
-	int nel = 1;
-
-	if (i < 0)
-	{
-		nel++;
-		num = i * -1;
-	}
-	else
-	{
-		num = i;
-	}
-	while (num > 9)
-	{
-		nel++;
-		num = num / 10;
-	}
-
-	return (nel);
+	print_list_str(info->env);
+	return (0);
 }
+
 /**
- * _myhelp - directory of the process
- * @info: Structure constant function prototype.
- *  Return: Always 0
+ * _getenv - gets the value of an environ variable
+ * @info: Structure containing potential arguments. Used to maintain
+ * @name: env var name
+ *
+ * Return: the value
  */
-char *_itoa(int num)
+char *_getenv(info_t *info, const char *name)
 {
-	char *f;
-	size_t  a;
-	int nel = intlen(num);
+	list_t *node = info->env;
+	char *p;
 
-	buff = malloc(nel + 1);
-	if (!f)
+	while (node)
 	{
-		return (NULL);
+		p = starts_with(node->str, name);
+		if (p && *p)
+			return (p);
+		node = node->next;
 	}
-	f[nel] = '\0';
-	if (num < 0)
-	{
-		a = num * -1;
-		*f = '-';
-	}
-	else
-		a = num;
-	nel--;
-
-	do {
-		*(f + nel) = (a % 10) + '0';
-		a /= 10;
-		nel--;
-	} while (a > 0);
-		return (f);
+	return (NULL);
 }
+
 /**
- * _myhelp - directory of the process
- * @info: Structure constant function prototype.
+ * _mysetenv - Initialize a new environment variable,
+ *             or modify an existing one
+ * @info: Structure containing potential arguments. Used to maintain
+ *        constant function prototype.
  *  Return: Always 0
  */
-void geterror(denim *n, char **var, char *dmc)
+int _mysetenv(info_t *info)
 {
-	int len;
-	char *emsg, *v_string;
-
-	v_string = _itoa(n->cnt);
-	len = _strlen(var[0]) + _strlen(dmc) + _strlen(v_string) + 17;
-	emsg = malloc(len);
-	if (!errmsg)
+	if (info->argc != 3)
 	{
-		return;
+		_eputs("Incorrect number of arguements\n");
+		return (1);
 	}
-	_strcpy(emsg, var[0]);
-	_strcat(emsg, ": ");
-	_strcat(emsg, v_string);
-	_strcat(emsg, ": ");
-	_strcat(emsg, dmc);
-	_strcat(emsg, ": not found\n");
-	_strcat(emsg, "\0");
-	write(STDOUT_FILENO, emsg, len);
-	free(emsg);
+	if (_setenv(info, info->argv[1], info->argv[2]))
+		return (0);
+	return (1);
+}
+
+/**
+ * _myunsetenv - Remove an environment variable
+ * @info: Structure containing potential arguments. Used to maintain
+ *        constant function prototype.
+ *  Return: Always 0
+ */
+int _myunsetenv(info_t *info)
+{
+	int i;
+
+	if (info->argc == 1)
+	{
+		_eputs("Too few arguements.\n");
+		return (1);
+	}
+	for (i = 1; i <= info->argc; i++)
+		_unsetenv(info, info->argv[i]);
+
+	return (0);
+}
+
+/**
+ * populate_env_list - populates env linked list
+ * @info: Structure containing potential arguments. Used to maintain
+ *          constant function prototype.
+ * Return: Always 0
+ */
+int populate_env_list(info_t *info)
+{
+	list_t *node = NULL;
+	size_t i;
+
+	for (i = 0; environ[i]; i++)
+		add_node_end(&node, environ[i], 0);
+	info->env = node;
+	return (0);
 }
